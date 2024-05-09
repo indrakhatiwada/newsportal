@@ -1,0 +1,33 @@
+import multer from "multer";
+import path from "path";
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, path.join(__dirname, "../uploads"));
+  },
+  fileName: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalName}`);
+  },
+});
+
+const uploadPicture = multer({
+  storage: storage,
+  limits: {
+    fileSize: 6 * 1000000,
+  },
+  fileFilter: function (req, file, cb) {
+    let ext = path.extname(file.originalName);
+    if (
+      ext !== ".png" &&
+      ext !== ".jpg" &&
+      ext !== ".jpeg" &&
+      ext !== ".webp"
+    ) {
+      return cb(
+        new Error("File format not supported, supports png, jpg,jpeg and webp")
+      );
+    }
+    cb(null, true);
+  },
+});
+
+export { uploadPicture };
